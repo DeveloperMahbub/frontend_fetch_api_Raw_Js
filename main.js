@@ -6,14 +6,14 @@ let output = "";
 const renderPosts = (posts) => {
   posts.forEach((post) => {
     output += `<div class="card col-md-6 bg-light">
-        <div class="card-body">
+        <div class="card-body" data-id=${post._id}>
           <h5 class="card-title">${post.title}</h5>
           <h6 class="card-subtitle mb-2 text-muted">${post.date}</h6>
           <p class="card-text">
           ${post.body}
           </p>
-          <a href="#" class="card-link">Edit</a>
-          <a href="#" class="card-link">Delete</a>
+          <a href="#" class="card-link" id="edit_post">Edit</a>
+          <a href="#" class="card-link" id="delete_post">Delete</a>
         </div>
       </div>`;
   });
@@ -29,7 +29,6 @@ fetch(url)
 
 //Create or Insert Post
 //Method Post
-
 addPostForm.addEventListener("submit", (e) => {
   e.preventDefault();
   fetch(url, {
@@ -48,4 +47,20 @@ addPostForm.addEventListener("submit", (e) => {
       dataArray.push(data);
       renderPosts(dataArray);
     });
+});
+
+postList.addEventListener("click", (e) => {
+  //   console.log(e.target.id);
+  let editbtnpresed = e.target.id == "edit_post";
+  let delbtnpresed = e.target.id == "delete_post";
+  let id = e.target.parentElement.dataset.id;
+  //Delete Post
+  //Method Delete
+  if (delbtnpresed) {
+    fetch(`${url}/${id}`, {
+      method: "DELETE",
+    })
+      .then((res) => res.json())
+      .then(() => location.reload());
+  }
 });
