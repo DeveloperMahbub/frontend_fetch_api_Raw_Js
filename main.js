@@ -1,4 +1,7 @@
 const postList = document.querySelector(".post-list");
+const addPostForm = document.querySelector(".addpost_form");
+const titleValue = document.getElementById("title_value");
+const bodyValue = document.getElementById("description_value");
 let output = "";
 const renderPosts = (posts) => {
   posts.forEach((post) => {
@@ -23,3 +26,26 @@ const url = "http://localhost:5000/api/posts";
 fetch(url)
   .then((res) => res.json())
   .then((data) => renderPosts(data));
+
+//Create or Insert Post
+//Method Post
+
+addPostForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  fetch(url, {
+    method: "POST",
+    headers: {
+      "content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      title: titleValue.value,
+      body: bodyValue.value,
+    }),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      const dataArray = [];
+      dataArray.push(data);
+      renderPosts(dataArray);
+    });
+});
