@@ -2,10 +2,12 @@ const postList = document.querySelector(".post-list");
 const addPostForm = document.querySelector(".addpost_form");
 const titleValue = document.getElementById("title_value");
 const bodyValue = document.getElementById("description_value");
+const btnSubmit = document.querySelector(".btn");
+
 let output = "";
 const renderPosts = (posts) => {
   posts.forEach((post) => {
-    output += `<div class="card col-md-6 bg-light">
+    output += `<div class="card my-2 col-md-6 bg-light">
         <div class="card-body" data-id=${post._id}>
           <h5 class="card-title">${post.title}</h5>
           <h6 class="card-subtitle mb-2 text-muted">${post.date}</h6>
@@ -47,6 +49,9 @@ addPostForm.addEventListener("submit", (e) => {
       dataArray.push(data);
       renderPosts(dataArray);
     });
+  // reset input field empty
+  titleValue.value = "";
+  bodyValue.value = "";
 });
 
 postList.addEventListener("click", (e) => {
@@ -54,6 +59,7 @@ postList.addEventListener("click", (e) => {
   let editbtnpresed = e.target.id == "edit_post";
   let delbtnpresed = e.target.id == "delete_post";
   let id = e.target.parentElement.dataset.id;
+
   //Delete Post
   //Method Delete
   if (delbtnpresed) {
@@ -63,4 +69,36 @@ postList.addEventListener("click", (e) => {
       .then((res) => res.json())
       .then(() => location.reload());
   }
+
+  //Edit Post
+  if (editbtnpresed) {
+    const parent = e.target.parentElement;
+    let titleContent = parent.querySelector(".card-title").textContent;
+    let bodyContent = parent.querySelector(".card-text").textContent;
+    let Content = bodyContent.trim(); //remove white space from both side
+    // console.log(Content);
+
+    titleValue.value = titleContent;
+    bodyValue.value = Content;
+    btnSubmit.innerHTML = "Update";
+  }
+
+  //Updte Post
+  //Method Patch
+
+  btnSubmit.addEventListener("click", (e) => {
+    e.preventDefault();
+    fetch(`${url}/${id}`, {
+      method: "PATCH",
+      headers: {
+        "content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title: titleValue.value,
+        body: bodyValue.value,
+      }),
+    })
+      .then((res) => res.json())
+      .then(() => location.reload());
+  });
 });
